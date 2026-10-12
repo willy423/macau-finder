@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>마카오 리조트 매장 찾기</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛶</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F1F4F7; --panel:#FFFFFF; --ink:#16212E; --muted:#5E6A79; --line:#DCE2E9;
+  --f1:#A3214B; --f3:#4E63B8; --f5:#9C7428; --fx:#5E6A79; --accent:#1C6E7D; --warn:#8A5A00; --warnbg:#FFF4D6;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0F151C; --panel:#18212B; --ink:#E7ECF2; --muted:#9AA6B4; --line:#2A3542;
+  --f1:#D9547C; --f3:#8497E8; --f5:#D3A95A; --fx:#8F9BAA; --accent:#5DB8C7; --warn:#F0C46A; --warnbg:#3A2F14; color-scheme:dark;}}
+:root[data-theme="dark"]{--bg:#0F151C; --panel:#18212B; --ink:#E7ECF2; --muted:#9AA6B4; --line:#2A3542;
+  --f1:#D9547C; --f3:#8497E8; --f5:#D3A95A; --fx:#8F9BAA; --accent:#5DB8C7; --warn:#F0C46A; --warnbg:#3A2F14; color-scheme:dark;}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans KR",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;font-size:16px;line-height:1.5;-webkit-text-size-adjust:100%}
+.wrap{max-width:720px;margin:0 auto}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding:14px 16px 10px;border-bottom:1px solid var(--line)}
+h1{font-size:19px;font-weight:700;margin:0 0 10px;letter-spacing:-.01em}
+h1 small{font-weight:400;color:var(--muted);font-size:13px;margin-left:6px}
+.search{position:relative}
+.search input{width:100%;font:inherit;font-size:17px;padding:13px 44px 13px 14px;border:1.5px solid var(--line);border-radius:12px;background:var(--panel);color:var(--ink);outline:none;-webkit-appearance:none}
+.search input:focus{border-color:var(--accent)}
+.clear{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:36px;height:36px;border:0;border-radius:18px;background:transparent;color:var(--muted);font-size:20px;cursor:pointer;display:none}
+.clear.on{display:block}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:10px 0 2px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;font:inherit;font-size:14px;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer;white-space:nowrap}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chip.fl[aria-pressed="true"][data-v="1"],.chip.mf[aria-pressed="true"][data-m="1"]{background:var(--f1);border-color:var(--f1);color:#fff}
+.chip.fl[aria-pressed="true"][data-v="3"],.chip.mf[aria-pressed="true"][data-m="3"]{background:var(--f3);border-color:var(--f3);color:#fff}
+.chip.fl[aria-pressed="true"][data-v="5"]{background:var(--f5);border-color:var(--f5);color:#fff}
+.count{font-size:13px;color:var(--muted);padding:10px 16px 4px}
+ul{list-style:none;margin:0;padding:0 12px 24px}
+li.row{display:flex;gap:12px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:8px}
+.fl-tile{flex:none;width:52px;border-radius:9px;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 0;background:var(--fx)}
+.fl-tile b{font-size:24px;line-height:1;font-weight:700;font-variant-numeric:tabular-nums}
+.fl-tile span{font-size:11px;opacity:.9;margin-top:2px}
+.fl-tile.f1{background:var(--f1)}.fl-tile.f3{background:var(--f3)}.fl-tile.f5{background:var(--f5)}
+.body{min-width:0;flex:1}
+.top{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.name{font-weight:700;font-size:16.5px}
+.no{font-weight:700;font-size:15px;color:var(--accent);font-variant-numeric:tabular-nums}
+.sub{color:var(--muted);font-size:13.5px;margin-top:1px;overflow-wrap:anywhere}
+.meta{font-size:14px;margin-top:4px;overflow-wrap:anywhere}
+.meta .tag{display:inline-block;font-size:12.5px;padding:1px 8px;border-radius:6px;background:var(--bg);border:1px solid var(--line);margin-right:6px;color:var(--ink)}
+.note{font-size:13px;color:var(--warn);background:var(--warnbg);border-radius:6px;padding:4px 8px;margin-top:6px}
+.acts{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.btn{font:inherit;font-size:14px;padding:7px 14px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;min-height:36px}
+.btn.copy{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn:focus-visible,.chip:focus-visible,.clear:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.empty{padding:28px 20px;color:var(--muted);text-align:center;font-size:15px}
+.more{display:block;margin:4px auto 20px;font:inherit;font-size:14px;padding:9px 18px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+footer{font-size:12px;color:var(--muted);padding:6px 18px 28px;line-height:1.6}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:10px;font-size:14px;opacity:0;transition:opacity .18s,transform .18s;pointer-events:none;z-index:9}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+@media (prefers-reduced-motion:reduce){.toast{transition:none}}
+.tabs{display:flex;gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:3px;margin-bottom:10px}
+.tab{flex:1;font:inherit;font-size:15px;font-weight:500;padding:8px;border:0;border-radius:8px;background:transparent;color:var(--muted);cursor:pointer}
+.tab[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+.tab:focus-visible,.zb:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#mapView{padding:0 12px 16px}
+.mapbar{display:flex;align-items:center;gap:6px;padding:10px 0;flex-wrap:wrap}
+.mapbar .sp{flex:1}
+.zb{font:inherit;font-size:15px;min-width:40px;height:38px;padding:0 12px;border-radius:9px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+.mapbox{position:relative;overflow:auto;background:#fff;border:1px solid var(--line);border-radius:12px;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y}
+.mapbox img{display:block;max-width:none;user-select:none;-webkit-user-drag:none}
+.maphint{font-size:12.5px;color:var(--muted);padding:8px 2px 0;line-height:1.5}
+.hide{display:none!important}
+@media (min-width:600px){header{padding:18px 20px 12px}ul{padding:0 16px 24px}}
+
+.rs{font-size:12px;color:var(--muted);font-weight:500}
+.status{padding:28px 20px;text-align:center;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>마카오 리조트 매장 찾기<small id="total"></small></h1>
+  <div class="tabs" role="tablist"><button class="tab" role="tab" id="tabS" aria-selected="true">검색</button><button class="tab" role="tab" id="tabM" aria-selected="false">층별 지도</button></div>
+  <div class="chips" id="rsc" role="group" aria-label="리조트"></div>
+  <div id="searchHead">
+    <div class="search">
+      <input id="q" type="search" inputmode="search" autocomplete="off" placeholder="매장명(한글·영문·중국어) 또는 번호" aria-label="검색">
+      <button class="clear" id="clr" aria-label="검색어 지우기">×</button>
+    </div>
+    <div class="chips" id="grp" role="group" aria-label="종류"></div>
+    <div class="chips" id="flr" role="group" aria-label="층"></div>
+  </div>
+</header>
+<div id="searchView">
+  <div class="count" id="cnt" aria-live="polite"></div>
+  <ul id="list"><li class="status">불러오는 중…</li></ul>
+  <button class="more" id="more" hidden>더 보기</button>
+</div>
+<div id="mapView" class="hide">
+  <div class="mapbar">
+    <span id="mfl" class="chips" style="padding:0"></span>
+    <span class="sp"></span>
+    <button class="zb" id="zOut" aria-label="축소">−</button>
+    <button class="zb" id="zFit">맞춤</button>
+    <button class="zb" id="zIn" aria-label="확대">+</button>
+  </div>
+  <div class="mapbox" id="mapbox"><img id="mapImg" alt=""></div>
+  <p class="maphint" id="maphint"></p>
+</div>
+<footer>
+  출처: 각 리조트 공식 사이트(매장·식당·부대시설), 공식 홍콩판 사이트(중국어 번체명), 층별 평면도(화장실·ATM 위치, 지도 탭). 한글명은 통용 표기이고 ATM 위치는 평면도 아이콘 기준 추정이에요. 입점·운영시간은 바뀔 수 있으니 중요한 안내 전에는 매장에 확인하세요.
+</footer>
+</div>
+<div class="toast" id="toast" role="status"></div>
+<script>
+const GROUPS=["전체","쇼핑","식당","화장실","은행·ATM","편의시설","호텔","즐길거리"];
+let RES=[],DATA=[],rs="all",g="전체",f="전체",limit=60;
+const $=id=>document.getElementById(id);
+const norm=s=>(s||"").toString().normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[\s'’.&•\-\/(),"!#]+/g,"");
+const esc=s=>(s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const rById=id=>RES.find(r=>r.id===id);
+function chips(el,arr,cls,sel,cb){el.innerHTML="";arr.forEach(([v,l])=>{const b=document.createElement("button");b.className="chip "+cls;b.dataset.v=v;if(cls==="mf")b.dataset.m=v;b.textContent=l;b.setAttribute("aria-pressed",v===sel);b.onclick=()=>{[...el.children].forEach(c=>c.setAttribute("aria-pressed",c===b));cb(v)};el.appendChild(b)})}
+function floorsFor(){const s=new Set(DATA.filter(d=>rs==="all"||d.r===rs).map(d=>d.lv.charAt(0)).filter(x=>/\d/.test(x)));return ["전체",...[...s].sort()]}
+function drawFloors(){if(!floorsFor().includes(f))f="전체";chips($("flr"),floorsFor().map(x=>[x,x==="전체"?"전체 층":x+"층"]),"fl",f,v=>{f=v;limit=60;render()})}
+const koSt=s=>{if(!s)return"";const m=s.match(/\(([^)]+)\)/);return m?m[1]:s};
+const lvLabel=lv=>/^\d$/.test(lv)?lv+"층":lv;
+function noLabel(d){if(!d.no)return"";if(/^(K|STK)/i.test(d.no))return"키오스크 "+d.no;if(/^\d/.test(d.no))return d.no+"호";return d.no}
+function copyText(d){const rn=rById(d.r).ko;
+  if(d.g==="쇼핑"||d.g==="식당"){let s=`${d.ko} (${d.en}${d.zh?" / "+d.zh:""})\n위치: ${rn} ${lvLabel(d.lv)} ${noLabel(d)}`;const st=koSt(d.st);if(st)s+=`, ${st}`;if(d.tel)s+=`\n전화: ${d.tel.split(" / ")[0]}`;return s}
+  let s=`${d.ko}: ${rn} ${lvLabel(d.lv)}, ${d.st}`;if(d.note)s+=`\n${d.note}`;return s}
+function score(d,q){if(!q)return 0;if(d.nk===q)return 0;if(norm(d.ko).startsWith(q)||norm(d.en).startsWith(q)||norm(d.zh).startsWith(q))return 1;if(d.nk.includes(q))return 2;return 3}
+function hasMap(d){const r=rById(d.r);return r.maps&&r.maps.some(m=>m.floor===d.lv.charAt(0))}
+function render(){
+  const raw=$("q").value.trim(),q=norm(raw);$("clr").classList.toggle("on",!!raw);
+  let r=DATA.filter(d=>(rs==="all"||d.r===rs)&&(g==="전체"||d.g===g)&&(f==="전체"||d.lv.startsWith(f))&&(!q||d.k.includes(q)));
+  if(q)r=r.map((d,i)=>[score(d,q),i,d]).sort((a,b)=>a[0]-b[0]||a[1]-b[1]).map(x=>x[2]);
+  $("cnt").textContent=r.length?`${r.length}곳`:"";
+  const ul=$("list");ul.innerHTML="";
+  if(!r.length){ul.innerHTML=`<li class="empty">${raw?`'${esc(raw)}'에 맞는 곳이 없어요. 영문 이름이나 매장 번호로 다시 검색해 보세요.`:"조건에 맞는 곳이 없어요."}</li>`;$("more").hidden=true;return}
+  const multi=rs==="all"&&RES.length>1;
+  r.slice(0,limit).forEach(d=>{
+    const li=document.createElement("li");li.className="row";
+    const fc=/^1/.test(d.lv)?"f1":/^3/.test(d.lv)?"f3":/^5/.test(d.lv)?"f5":"";
+    const nm=d.g==="쇼핑"||d.g==="식당";
+    li.innerHTML=`<div class="fl-tile ${fc}"><b>${esc(/^\d/.test(d.lv)?d.lv.charAt(0):d.lv)}</b><span>${/^\d/.test(d.lv)?"층":""}</span></div>
+    <div class="body">
+      ${multi?`<div class="rs">${esc(rById(d.r).ko)}</div>`:""}
+      <div class="top"><span class="name">${esc(d.ko)}</span>${d.no?`<span class="no">${esc(noLabel(d))}</span>`:""}</div>
+      ${nm?`<div class="sub">${esc(d.en)}${d.zh?" · "+esc(d.zh):""}</div>`:""}
+      <div class="meta"><span class="tag">${esc(nm?d.up:d.g)}</span>${esc(nm?koSt(d.st):d.st)}</div>
+      ${d.note?`<div class="note">${esc(d.note)}</div>`:""}
+      <div class="acts"><button class="btn copy">카톡 답변 복사</button>${hasMap(d)?`<button class="btn mapgo">지도</button>`:""}${d.tel?`<a class="btn" href="tel:${d.tel.split(" / ")[0].replace(/\s/g,"")}">전화</a>`:""}</div>
+    </div>`;
+    li.querySelector(".copy").onclick=()=>copy(copyText(d));
+    const mg=li.querySelector(".mapgo");if(mg)mg.onclick=()=>showMap(d.r,d.lv.charAt(0));
+    ul.appendChild(li)});
+  $("more").hidden=r.length<=limit}
+$("more").onclick=()=>{limit+=60;render()};
+$("q").addEventListener("input",()=>{limit=60;render()});
+$("clr").onclick=()=>{$("q").value="";$("q").focus();render()};
+let tt;function toast(m){const t=$("toast");t.textContent=m;t.classList.add("on");clearTimeout(tt);tt=setTimeout(()=>t.classList.remove("on"),1600)}
+async function copy(s){try{await navigator.clipboard.writeText(s);toast("복사했어요")}catch(e){const ta=document.createElement("textarea");ta.value=s;ta.setAttribute("readonly","");ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();ta.setSelectionRange(0,s.length);let ok=false;try{ok=document.execCommand("copy")}catch(_){}document.body.removeChild(ta);toast(ok?"복사했어요":"복사가 막혀 있어요. 길게 눌러 직접 복사하세요")}}
+/* map */
+let mapR="",mf="",zoom=1,fitW=0;const img=$("mapImg"),box=$("mapbox");
+function sizeBox(){const top=box.getBoundingClientRect().top;box.style.height=Math.max(280,window.innerHeight-top-70)+"px"}
+function applyZoom(cx,cy){const r=box.getBoundingClientRect();cx=cx??r.width/2;cy=cy??r.height/2;const ox=(box.scrollLeft+cx)/img.offsetWidth,oy=(box.scrollTop+cy)/(img.offsetHeight||1);img.style.width=Math.round(fitW*zoom)+"px";box.scrollLeft=ox*img.offsetWidth-cx;box.scrollTop=oy*img.offsetHeight-cy}
+function fit(){fitW=box.clientWidth;zoom=1;img.style.width=fitW+"px";box.scrollLeft=0;box.scrollTop=0}
+function mapResort(){return rs!=="all"?rs:(mapR||(RES.find(r=>r.maps&&r.maps.length)||{}).id)}
+function drawMap(fl){
+  const r=rById(mapResort());
+  if(!r||!r.maps||!r.maps.length){$("mfl").innerHTML="";img.removeAttribute("src");img.alt="";$("maphint").textContent=(r?r.ko:"이 리조트")+" 지도는 아직 등록되지 않았어요.";box.style.height="0";return}
+  mapR=r.id;if(!r.maps.some(m=>m.floor===fl))fl=r.maps[0].floor;mf=fl;
+  chips($("mfl"),r.maps.map(m=>[m.floor,(rs==="all"?r.ko+" ":"")+m.floor+"층"]),"mf",fl,v=>drawMap(v));
+  const m=r.maps.find(x=>x.floor===fl);img.alt=`${r.ko} ${fl}층 평면도`;
+  $("maphint").textContent="두 손가락으로 벌리거나 + 버튼으로 확대하고, 끌어서 이동하세요. 이미지를 길게 누르면 휴대폰에 저장할 수 있어요. "+(r.mapNote||"");
+  img.onload=()=>{sizeBox();fit()};if(!img.src.endsWith(m.file))img.src=m.file;else{sizeBox();fit()}}
+function showTab(m){$("tabS").setAttribute("aria-selected",!m);$("tabM").setAttribute("aria-selected",m);$("searchHead").classList.toggle("hide",m);$("searchView").classList.toggle("hide",m);$("mapView").classList.toggle("hide",!m);window.scrollTo(0,0);if(m)drawMap(mf)}
+function showMap(rid,fl){mapR=rid;mf=fl;showTab(true)}
+$("tabS").onclick=()=>showTab(false);$("tabM").onclick=()=>showTab(true);
+$("zIn").onclick=()=>{zoom=Math.min(6,zoom*1.4);applyZoom()};
+$("zOut").onclick=()=>{zoom=Math.max(1,zoom/1.4);applyZoom()};
+$("zFit").onclick=fit;
+window.addEventListener("resize",()=>{if(!$("mapView").classList.contains("hide")&&img.src){sizeBox();fitW=box.clientWidth;applyZoom()}});
+let pd=0,pz=1;const dist=e=>Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+box.addEventListener("touchstart",e=>{if(e.touches.length===2){pd=dist(e);pz=zoom}},{passive:true});
+box.addEventListener("touchmove",e=>{if(e.touches.length===2&&pd){e.preventDefault();const r=box.getBoundingClientRect();const cx=(e.touches[0].clientX+e.touches[1].clientX)/2-r.left,cy=(e.touches[0].clientY+e.touches[1].clientY)/2-r.top;zoom=Math.min(6,Math.max(1,pz*dist(e)/pd));applyZoom(cx,cy)}},{passive:false});
+box.addEventListener("touchend",e=>{if(e.touches.length<2)pd=0});
+let drag=null;box.addEventListener("mousedown",e=>{drag={x:e.clientX,y:e.clientY,l:box.scrollLeft,t:box.scrollTop};box.style.cursor="grabbing";e.preventDefault()});
+window.addEventListener("mousemove",e=>{if(drag){box.scrollLeft=drag.l-(e.clientX-drag.x);box.scrollTop=drag.t-(e.clientY-drag.y)}});
+window.addEventListener("mouseup",()=>{drag=null;box.style.cursor=""});
+box.addEventListener("wheel",e=>{if(e.ctrlKey||e.metaKey){e.preventDefault();const r=box.getBoundingClientRect();zoom=Math.min(6,Math.max(1,zoom*(e.deltaY<0?1.15:1/1.15)));applyZoom(e.clientX-r.left,e.clientY-r.top)}},{passive:false});
+/* load */
+(async()=>{
+  try{
+    RES=await fetch("data/resorts.json",{cache:"no-cache"}).then(r=>{if(!r.ok)throw 0;return r.json()});
+    const all=await Promise.all(RES.map(r=>fetch(`data/${r.id}.json`,{cache:"no-cache"}).then(x=>x.ok?x.json():[]).catch(()=>[])));
+    all.forEach((arr,i)=>arr.forEach(d=>{d.r=RES[i].id;d.k=[d.ko,d.en,d.zh,d.up,d.st,d.no,RES[i].ko,RES[i].en].map(norm).join("|");d.nk=norm(d.no);DATA.push(d)}));
+  }catch(e){$("list").innerHTML='<li class="status">데이터를 불러오지 못했어요. 인터넷 연결을 확인하고 새로고침하세요. (PC에서 파일을 더블클릭해 열면 동작하지 않고, GitHub Pages 주소로 열어야 해요.)</li>';return}
+  $("total").textContent=DATA.length+"곳";
+  const opts=[["all","전체 리조트"],...RES.map(r=>[r.id,r.ko])];
+  if(RES.length>1)chips($("rsc"),opts,"rs",rs,v=>{rs=v;limit=60;drawFloors();render();if(!$("mapView").classList.contains("hide"))drawMap(mf)});
+  else{rs=RES[0].id;$("rsc").style.display="none"}
+  chips($("grp"),GROUPS.map(x=>[x,x]),"gr",g,v=>{g=v;limit=60;render()});
+  drawFloors();render();
+})();
+</script>
+</body>
+</html>

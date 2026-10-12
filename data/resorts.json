@@ -1,0 +1,20 @@
+[
+ {
+  "id": "venetian",
+  "ko": "베네시안",
+  "en": "The Venetian Macao",
+  "zh": "澳門威尼斯人",
+  "updated": "2026-10-12",
+  "maps": [
+   {
+    "floor": "1",
+    "file": "maps/venetian-1F.jpg"
+   },
+   {
+    "floor": "3",
+    "file": "maps/venetian-3F.jpg"
+   }
+  ],
+  "mapNote": "5층은 별도 지도가 없고 3층 지도의 안내 박스에 표시돼 있어요."
+ }
+]
