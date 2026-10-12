@@ -2,9 +2,11 @@
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>키보드 테스트</title>
-<style>body{font-family:sans-serif;padding:20px}input{width:100%;font-size:18px;padding:12px;box-sizing:border-box}</style>
+<style>body{font-family:sans-serif;padding:20px}input,textarea,.ce{display:block;width:100%;font-size:18px;padding:12px;box-sizing:border-box;margin:6px 0 18px;border:1px solid #999;border-radius:8px;font-family:inherit}textarea{resize:none;height:52px}.ce{min-height:50px}</style>
 </head><body>
-<h3>키보드 테스트 (아무 기능 없는 입력칸)</h3>
-<input type="text" placeholder="여기서 한/영 전환 해보기">
-<p>여기서도 키보드가 사라지면 페이지가 아니라 크롬·Gboard와 github.io 조합 문제예요.</p>
+<h3>키보드 테스트 v2</h3>
+<p>각 칸에서 한/영 전환을 해 보고, 되는 칸 번호를 알려주세요.</p>
+<b>1. input</b><input type="text" placeholder="1번 칸">
+<b>2. textarea</b><textarea rows="1" placeholder="2번 칸"></textarea>
+<b>3. 편집 가능 영역</b><div class="ce" contenteditable="true"></div>
 </body></html>
