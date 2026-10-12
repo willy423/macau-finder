@@ -60,5 +60,23 @@
    }
   ],
   "mapNote": "6층(수영장·스파·아쿠아 월드·큐브 킹덤)과 에펠탑은 별도 지도가 없어요."
+ },
+ {
+  "id": "galaxy",
+  "ko": "갤럭시",
+  "en": "Galaxy Macau",
+  "zh": "澳門銀河",
+  "updated": "2026-10-12",
+  "maps": [
+   {
+    "floor": "G",
+    "file": "maps/galaxy-GF.jpg"
+   },
+   {
+    "floor": "1",
+    "file": "maps/galaxy-1F.jpg"
+   }
+  ],
+  "mapNote": "G층 지도에 갤럭시 마카오·브로드웨이 마카오·갤럭시 아레나가 함께 있어요. M층과 호텔 위층 시설은 별도 지도가 없어요."
  }
 ]
