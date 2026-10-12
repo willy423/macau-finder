@@ -38,5 +38,27 @@
    }
   ],
   "mapNote": "호텔 수영장·헬스클럽(4·8층)과 세인트레지스 스파(38층)는 별도 지도가 없어요."
+ },
+ {
+  "id": "parisian",
+  "ko": "파리지앵",
+  "en": "The Parisian Macao",
+  "zh": "澳門巴黎人",
+  "updated": "2026-10-12",
+  "maps": [
+   {
+    "floor": "1",
+    "file": "maps/parisian-1F.jpg"
+   },
+   {
+    "floor": "3",
+    "file": "maps/parisian-3F.jpg"
+   },
+   {
+    "floor": "5",
+    "file": "maps/parisian-5F.jpg"
+   }
+  ],
+  "mapNote": "6층(수영장·스파·아쿠아 월드·큐브 킹덤)과 에펠탑은 별도 지도가 없어요."
  }
 ]
