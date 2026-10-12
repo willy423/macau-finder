@@ -16,5 +16,27 @@
    }
   ],
   "mapNote": "5층은 별도 지도가 없고 3층 지도의 안내 박스에 표시돼 있어요."
+ },
+ {
+  "id": "londoner",
+  "ko": "런더너",
+  "en": "The Londoner Macao",
+  "zh": "澳門倫敦人",
+  "updated": "2026-10-12",
+  "maps": [
+   {
+    "floor": "1",
+    "file": "maps/londoner-1F.jpg"
+   },
+   {
+    "floor": "2",
+    "file": "maps/londoner-2F.jpg"
+   },
+   {
+    "floor": "3",
+    "file": "maps/londoner-3F.jpg"
+   }
+  ],
+  "mapNote": "호텔 수영장·헬스클럽(4·8층)과 세인트레지스 스파(38층)는 별도 지도가 없어요."
  }
 ]
