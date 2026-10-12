@@ -91,7 +91,7 @@ footer{font-size:12px;color:var(--muted);padding:6px 18px 28px;line-height:1.6}
   <div class="chips" id="rsc" role="group" aria-label="리조트"></div>
   <div id="searchHead">
     <div class="search">
-      <input id="q" type="search" inputmode="search" autocomplete="off" placeholder="매장명(한글·영문·중국어) 또는 번호" aria-label="검색">
+      <input id="q" type="text" enterkeyhint="search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="매장명(한글·영문·중국어) 또는 번호" aria-label="검색">
       <button class="clear" id="clr" aria-label="검색어 지우기">×</button>
     </div>
     <div class="chips" id="grp" role="group" aria-label="종류"></div>
@@ -163,7 +163,11 @@ function render(){
     ul.appendChild(li)});
   $("more").hidden=r.length<=limit}
 $("more").onclick=()=>{limit+=60;render()};
-$("q").addEventListener("input",()=>{limit=60;render()});
+let composing=false,rt;
+$("q").addEventListener("compositionstart",()=>{composing=true});
+$("q").addEventListener("compositionend",()=>{composing=false;limit=60;render()});
+$("q").addEventListener("input",()=>{limit=60;clearTimeout(rt);rt=setTimeout(render,composing?250:80)});
+$("q").addEventListener("keydown",e=>{if(e.key==="Enter")e.preventDefault()});
 $("clr").onclick=()=>{$("q").value="";$("q").focus();render()};
 let tt;function toast(m){const t=$("toast");t.textContent=m;t.classList.add("on");clearTimeout(tt);tt=setTimeout(()=>t.classList.remove("on"),1600)}
 async function copy(s){try{await navigator.clipboard.writeText(s);toast("복사했어요")}catch(e){const ta=document.createElement("textarea");ta.value=s;ta.setAttribute("readonly","");ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();ta.setSelectionRange(0,s.length);let ok=false;try{ok=document.execCommand("copy")}catch(_){}document.body.removeChild(ta);toast(ok?"복사했어요":"복사가 막혀 있어요. 길게 눌러 직접 복사하세요")}}
