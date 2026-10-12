@@ -25,7 +25,7 @@
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans KR",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;font-size:16px;line-height:1.5;-webkit-text-size-adjust:100%}
 .wrap{max-width:720px;margin:0 auto}
-header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding:14px 16px 10px;border-bottom:1px solid var(--line)}
+header{position:relative;z-index:5;background:var(--bg);padding:14px 16px 10px;border-bottom:1px solid var(--line)}
 h1{font-size:19px;font-weight:700;margin:0 0 10px;letter-spacing:-.01em}
 h1 small{font-weight:400;color:var(--muted);font-size:13px;margin-left:6px}
 .search{position:relative}
@@ -77,6 +77,9 @@ footer{font-size:12px;color:var(--muted);padding:6px 18px 28px;line-height:1.6}
 .mapbox img{display:block;max-width:none;user-select:none;-webkit-user-drag:none}
 .maphint{font-size:12.5px;color:var(--muted);padding:8px 2px 0;line-height:1.5}
 .hide{display:none!important}
+.totop{position:fixed;right:14px;bottom:calc(16px + env(safe-area-inset-bottom,0px));width:46px;height:46px;border-radius:23px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font-size:20px;box-shadow:0 2px 8px rgba(0,0,0,.15);cursor:pointer;z-index:8}
+#dbg{position:fixed;left:0;right:0;bottom:0;max-height:38vh;overflow:auto;background:#000;color:#0f0;font:12px/1.4 monospace;padding:6px 8px;z-index:20;white-space:pre-wrap}
+.ver{opacity:.7}
 @media (min-width:600px){header{padding:18px 20px 12px}ul{padding:0 16px 24px}}
 
 .rs{font-size:12px;color:var(--muted);font-weight:500}
@@ -115,9 +118,10 @@ footer{font-size:12px;color:var(--muted);padding:6px 18px 28px;line-height:1.6}
   <p class="maphint" id="maphint"></p>
 </div>
 <footer>
-  출처: 각 리조트 공식 사이트(매장·식당·부대시설), 공식 홍콩판 사이트(중국어 번체명), 층별 평면도(화장실·ATM 위치, 지도 탭). 한글명은 통용 표기이고 ATM 위치는 평면도 아이콘 기준 추정이에요. 입점·운영시간은 바뀔 수 있으니 중요한 안내 전에는 매장에 확인하세요.
+  출처: 각 리조트 공식 사이트(매장·식당·부대시설), 공식 홍콩판 사이트(중국어 번체명), 층별 평면도(화장실·ATM 위치, 지도 탭). 한글명은 통용 표기이고 ATM 위치는 평면도 아이콘 기준 추정이에요. 입점·운영시간은 바뀔 수 있으니 중요한 안내 전에는 매장에 확인하세요. <span class="ver">v2026-10-12c</span>
 </footer>
 </div>
+<button class="totop hide" id="totop" aria-label="맨 위로">↑</button>
 <div class="toast" id="toast" role="status"></div>
 <script>
 const GROUPS=["전체","쇼핑","식당","화장실","은행·ATM","편의시설","호텔","즐길거리"];
@@ -200,6 +204,19 @@ let drag=null;box.addEventListener("mousedown",e=>{drag={x:e.clientX,y:e.clientY
 window.addEventListener("mousemove",e=>{if(drag){box.scrollLeft=drag.l-(e.clientX-drag.x);box.scrollTop=drag.t-(e.clientY-drag.y)}});
 window.addEventListener("mouseup",()=>{drag=null;box.style.cursor=""});
 box.addEventListener("wheel",e=>{if(e.ctrlKey||e.metaKey){e.preventDefault();const r=box.getBoundingClientRect();zoom=Math.min(6,Math.max(1,zoom*(e.deltaY<0?1.15:1/1.15)));applyZoom(e.clientX-r.left,e.clientY-r.top)}},{passive:false});
+
+/* scroll-to-top */
+window.addEventListener("scroll",()=>{$("totop").classList.toggle("hide",window.scrollY<400)},{passive:true});
+$("totop").onclick=()=>{window.scrollTo({top:0});};
+/* debug: add ?debug=1 to the address */
+if(/[?&]debug=1/.test(location.search)){const box=document.createElement("div");box.id="dbg";document.body.appendChild(box);
+ const log=m=>{const s=new Date().toISOString().slice(17,23)+" "+m;box.textContent=s+"\n"+box.textContent.slice(0,4000)};
+ const q=$("q");["focus","blur","compositionstart","compositionend","beforeinput","input","keydown"].forEach(ev=>q.addEventListener(ev,e=>log(ev+(e.data!=null?" data="+JSON.stringify(e.data):"")+(e.inputType?" type="+e.inputType:"")+(e.key?" key="+e.key:"")+" val="+JSON.stringify(q.value))));
+ window.addEventListener("resize",()=>log("resize "+innerWidth+"x"+innerHeight));
+ if(window.visualViewport)visualViewport.addEventListener("resize",()=>log("vv "+Math.round(visualViewport.height)));
+ document.addEventListener("visibilitychange",()=>log("visibility "+document.visibilityState));
+ window.addEventListener("blur",()=>log("window blur"));window.addEventListener("focus",()=>log("window focus"));
+ log("debug on")}
 /* load */
 (async()=>{
   try{
