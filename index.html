@@ -74,6 +74,8 @@ footer{font-size:12px;color:var(--muted);padding:6px 18px 28px;line-height:1.6}
 .mapbox img{display:block;max-width:none;user-select:none;-webkit-user-drag:none}
 .maphint{font-size:12.5px;color:var(--muted);padding:8px 2px 0;line-height:1.5}
 .hide{display:none!important}
+[hidden]{display:none!important}
+.fl-tile b.multi{font-size:15px}
 .totop{position:fixed;right:14px;bottom:calc(16px + env(safe-area-inset-bottom,0px));width:46px;height:46px;border-radius:23px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font-size:20px;box-shadow:0 2px 8px rgba(0,0,0,.15);cursor:pointer;z-index:8}
 #dbg{position:fixed;left:0;right:0;bottom:0;max-height:38vh;overflow:auto;background:#000;color:#0f0;font:12px/1.4 monospace;padding:6px 8px;z-index:20;white-space:pre-wrap}
 .ver{opacity:.7}
@@ -115,7 +117,7 @@ footer{font-size:12px;color:var(--muted);padding:6px 18px 28px;line-height:1.6}
   <p class="maphint" id="maphint"></p>
 </div>
 <footer>
-  출처: 각 리조트 공식 사이트(매장·식당·부대시설), 공식 홍콩판 사이트(중국어 번체명), 층별 평면도(화장실·ATM 위치, 지도 탭). 한글명은 통용 표기이고 ATM 위치는 평면도 아이콘 기준 추정이에요. 입점·운영시간은 바뀔 수 있으니 중요한 안내 전에는 매장에 확인하세요. <span class="ver">v2026-10-12e</span>
+  출처: 각 리조트 공식 사이트(매장·식당·부대시설), 공식 홍콩판 사이트(중국어 번체명), 층별 평면도(화장실·ATM 위치, 지도 탭). 한글명은 통용 표기이고 ATM 위치는 평면도 아이콘 기준 추정이에요. 입점·운영시간은 바뀔 수 있으니 중요한 안내 전에는 매장에 확인하세요. <span class="ver">v2026-10-12f</span>
 </footer>
 </div>
 <button class="totop hide" id="totop" aria-label="맨 위로">↑</button>
@@ -128,7 +130,7 @@ const norm=s=>(s||"").toString().normalize("NFD").replace(/[\u0300-\u036f]/g,"")
 const esc=s=>(s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const rById=id=>RES.find(r=>r.id===id);
 function chips(el,arr,cls,sel,cb){el.innerHTML="";arr.forEach(([v,l])=>{const b=document.createElement("button");b.className="chip "+cls;b.dataset.v=v;if(cls==="mf")b.dataset.m=v;b.textContent=l;b.setAttribute("aria-pressed",v===sel);b.onclick=()=>{[...el.children].forEach(c=>c.setAttribute("aria-pressed",c===b));cb(v)};el.appendChild(b)})}
-function floorsFor(){const s=new Set(DATA.filter(d=>rs==="all"||d.r===rs).map(d=>d.lv.charAt(0)).filter(x=>/\d/.test(x)));return ["전체",...[...s].sort()]}
+function floorsFor(){const s=new Set(DATA.filter(d=>rs==="all"||d.r===rs).flatMap(d=>d.lv.split(/[·,]/)).filter(x=>/^\d$/.test(x)));return ["전체",...[...s].sort()]}
 function drawFloors(){if(!floorsFor().includes(f))f="전체";chips($("flr"),floorsFor().map(x=>[x,x==="전체"?"전체 층":x+"층"]),"fl",f,v=>{f=v;limit=60;render()})}
 const koSt=s=>{if(!s)return"";const m=s.match(/\(([^)]+)\)/);return m?m[1]:s};
 const lvLabel=lv=>/^\d$/.test(lv)?lv+"층":lv;
@@ -140,7 +142,7 @@ function score(d,q){if(!q)return 0;if(d.nk===q)return 0;if(norm(d.ko).startsWith
 function hasMap(d){const r=rById(d.r);return r.maps&&r.maps.some(m=>m.floor===d.lv.charAt(0))}
 function render(){
   const raw=$("q").value.trim(),q=norm(raw);$("clr").classList.toggle("on",!!raw);
-  let r=DATA.filter(d=>(rs==="all"||d.r===rs)&&(g==="전체"||d.g===g)&&(f==="전체"||d.lv.startsWith(f))&&(!q||d.k.includes(q)));
+  let r=DATA.filter(d=>(rs==="all"||d.r===rs)&&(g==="전체"||d.g===g)&&(f==="전체"||d.lv.split(/[·,]/).includes(f)||d.lv===f)&&(!q||d.k.includes(q)));
   if(q)r=r.map((d,i)=>[score(d,q),i,d]).sort((a,b)=>a[0]-b[0]||a[1]-b[1]).map(x=>x[2]);
   $("cnt").textContent=r.length?`${r.length}곳`:"";
   const ul=$("list");ul.innerHTML="";
@@ -150,7 +152,7 @@ function render(){
     const li=document.createElement("li");li.className="row";
     const fc=/^1/.test(d.lv)?"f1":/^3/.test(d.lv)?"f3":/^5/.test(d.lv)?"f5":"";
     const nm=d.g==="쇼핑"||d.g==="식당";
-    li.innerHTML=`<div class="fl-tile ${fc}"><b>${esc(/^\d/.test(d.lv)?d.lv.charAt(0):d.lv)}</b><span>${/^\d/.test(d.lv)?"층":""}</span></div>
+    li.innerHTML=`<div class="fl-tile ${fc}"><b class="${/^\d$/.test(d.lv)?"":"multi"}">${esc(d.lv)}</b><span>${/^\d/.test(d.lv)?"층":""}</span></div>
     <div class="body">
       ${multi?`<div class="rs">${esc(rById(d.r).ko)}</div>`:""}
       <div class="top"><span class="name">${esc(d.ko)}</span>${d.no?`<span class="no">${esc(noLabel(d))}</span>`:""}</div>
@@ -219,7 +221,7 @@ if(/[?&]debug=1/.test(location.search)){const box=document.createElement("div");
   try{
     RES=await fetch("data/resorts.json",{cache:"no-cache"}).then(r=>{if(!r.ok)throw 0;return r.json()});
     const all=await Promise.all(RES.map(r=>fetch(`data/${r.id}.json`,{cache:"no-cache"}).then(x=>x.ok?x.json():[]).catch(()=>[])));
-    all.forEach((arr,i)=>arr.forEach(d=>{d.r=RES[i].id;d.k=[d.ko,d.en,d.zh,d.up,d.st,d.no,RES[i].ko,RES[i].en].map(norm).join("|");d.nk=norm(d.no);DATA.push(d)}));
+    all.forEach((arr,i)=>arr.forEach(d=>{d.r=RES[i].id;d.k=[d.ko,d.en,d.zh,d.up,d.no,RES[i].ko,RES[i].en].map(norm).join("|");d.nk=norm(d.no);DATA.push(d)}));
   }catch(e){$("list").innerHTML='<li class="status">데이터를 불러오지 못했어요. 인터넷 연결을 확인하고 새로고침하세요. (PC에서 파일을 더블클릭해 열면 동작하지 않고, GitHub Pages 주소로 열어야 해요.)</li>';return}
   $("total").textContent=DATA.length+"곳";
   const opts=[["all","전체 리조트"],...RES.map(r=>[r.id,r.ko])];
