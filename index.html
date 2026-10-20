@@ -32,7 +32,10 @@ h1 small{font-weight:400;color:var(--muted);font-size:13px;margin-left:6px}
 .clear.on{display:block}
 .chips{display:flex;gap:6px;overflow-x:auto;padding:10px 0 2px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .chips::-webkit-scrollbar{display:none}
-#rsc{flex-wrap:wrap;overflow-x:visible}
+@media (min-width:700px){#rsc,#cui{flex-wrap:wrap;overflow-x:visible}}
+.search textarea::placeholder{font-size:14px;letter-spacing:-.2px}
+.meta .tag.cat{font-weight:700;background:var(--ink);color:var(--panel);border-color:var(--ink)}
+.mich{display:inline-block;font-size:12px;font-weight:700;padding:1px 7px;border-radius:999px;background:#C8102E;color:#fff;margin-left:6px;vertical-align:middle}
 .chip{flex:none;font:inherit;font-size:14px;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer;white-space:nowrap}
 .chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .chip.fl[aria-pressed="true"][data-v="1"],.chip.mf[aria-pressed="true"][data-m="1"]{background:var(--f1);border-color:var(--f1);color:#fff}
@@ -98,6 +101,7 @@ footer{font-size:12px;color:var(--muted);padding:6px 18px 28px;line-height:1.6}
       <button class="clear" id="clr" aria-label="검색어 지우기">×</button>
     </div>
     <div class="chips" id="grp" role="group" aria-label="종류"></div>
+    <div class="chips" id="cui" role="group" aria-label="음식 종류" hidden></div>
     <div class="chips" id="flr" role="group" aria-label="층"></div>
   </div>
 </header>
@@ -118,14 +122,17 @@ footer{font-size:12px;color:var(--muted);padding:6px 18px 28px;line-height:1.6}
   <p class="maphint" id="maphint"></p>
 </div>
 <footer>
-  출처: 각 리조트 공식 사이트(매장·식당·부대시설), 공식 홍콩판 사이트(중국어 번체명), 층별 평면도(화장실·ATM 위치, 지도 탭). 한글명은 통용 표기이고 ATM 위치는 평면도 아이콘 기준 추정이에요. 입점·운영시간은 바뀔 수 있으니 중요한 안내 전에는 매장에 확인하세요. <span class="ver">v2026-10-12f</span>
+  출처: 각 리조트 공식 사이트(매장·식당·부대시설), 공식 홍콩판 사이트(중국어 번체명), 층별 평면도(화장실·ATM 위치, 지도 탭). 한글명은 통용 표기이고 ATM 위치는 평면도 아이콘 기준 추정이에요. 입점·운영시간은 바뀔 수 있으니 중요한 안내 전에는 매장에 확인하세요. <span class="ver">v2026-10-20</span>
 </footer>
 </div>
 <button class="totop hide" id="totop" aria-label="맨 위로">↑</button>
 <div class="toast" id="toast" role="status"></div>
 <script>
 const GROUPS=["전체","쇼핑","식당","화장실","은행·ATM","편의시설","호텔","즐길거리"];
-let RES=[],DATA=[],rs="all",g="전체",f="전체",limit=60;
+let RES=[],DATA=[],rs="all",g="전체",f="전체",cu="전체",limit=60;
+const CUIS=["중식","차찬텡","일식","한식","양식","아시안","뷔페","패스트푸드","카페·디저트","바·라운지","푸드코트·식당가","기타"];
+const michOf=d=>{const m=(d.up||"").match(/미쉐린 (\d)스타/);return m?+m[1]:0};
+function drawCui(){const el=$("cui");el.hidden=g!=="식당";if(el.hidden)return;const have=new Set(DATA.filter(d=>d.g==="식당"&&(rs==="all"||d.r===rs)).map(d=>d.c));const arr=[["전체","전체 음식"],["미쉐린","★ 미쉐린"],...CUIS.filter(c=>have.has(c)).map(c=>[c,c])];if(!arr.some(a=>a[0]===cu))cu="전체";chips(el,arr,"cu",cu,v=>{cu=v;limit=60;render()})}
 const $=id=>document.getElementById(id);
 const norm=s=>(s||"").toString().normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[\s'’.&•\-\/(),"!#]+/g,"");
 const esc=s=>(s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -137,13 +144,13 @@ const koSt=s=>{if(!s)return"";const m=s.match(/\(([^)]+)\)/);return m?m[1]:s};
 const lvLabel=lv=>/^\d$/.test(lv)?lv+"층":lv;
 function noLabel(d){if(!d.no)return"";if(/^(K|STK)/i.test(d.no))return"키오스크 "+d.no;if(/^\d/.test(d.no))return d.no+"호";return d.no}
 function copyText(d){const rn=rById(d.r).ko;
-  if(d.g==="쇼핑"||d.g==="식당"){let s=`${d.ko} (${d.en}${d.zh?" / "+d.zh:""})\n위치: ${rn} ${lvLabel(d.lv)} ${noLabel(d)}`;const st=koSt(d.st);if(st)s+=`, ${st}`;if(d.tel)s+=`\n전화: ${d.tel.split(" / ")[0]}`;return s}
+  if(d.g==="쇼핑"||d.g==="식당"){let s=`${d.ko} (${d.en}${d.zh?" / "+d.zh:""})\n위치: ${rn} ${lvLabel(d.lv)} ${noLabel(d)}`;const st=koSt(d.st);if(st)s+=`, ${st}`;if(d.g==="식당"&&d.c)s+=`\n종류: ${d.c}${michOf(d)?` · 미쉐린 ${michOf(d)}스타`:""}`;if(d.tel)s+=`\n전화: ${d.tel.split(" / ")[0]}`;return s}
   let s=`${d.ko}: ${rn} ${lvLabel(d.lv)}, ${d.st}`;if(d.note)s+=`\n${d.note}`;return s}
 function score(d,q){if(!q)return 0;if(d.nk===q)return 0;if(norm(d.ko).startsWith(q)||norm(d.en).startsWith(q)||norm(d.zh).startsWith(q))return 1;if(d.nk.includes(q))return 2;return 3}
 function hasMap(d){const r=rById(d.r);return r.maps&&r.maps.some(m=>m.floor===d.lv.charAt(0))}
 function render(){
   const raw=$("q").value.trim(),q=norm(raw);$("clr").classList.toggle("on",!!raw);
-  let r=DATA.filter(d=>(rs==="all"||d.r===rs)&&(g==="전체"||d.g===g)&&(f==="전체"||d.lv.split(/[·,]/).includes(f)||d.lv===f)&&(!q||d.k.includes(q)));
+  let r=DATA.filter(d=>(rs==="all"||d.r===rs)&&(g==="전체"||d.g===g)&&(g!=="식당"||cu==="전체"||(cu==="미쉐린"?michOf(d)>0:d.c===cu))&&(f==="전체"||d.lv.split(/[·,]/).includes(f)||d.lv===f)&&(!q||d.k.includes(q)));
   if(q)r=r.map((d,i)=>[score(d,q),i,d]).sort((a,b)=>a[0]-b[0]||a[1]-b[1]).map(x=>x[2]);
   $("cnt").textContent=r.length?`${r.length}곳`:"";
   const ul=$("list");ul.innerHTML="";
@@ -156,9 +163,9 @@ function render(){
     li.innerHTML=`<div class="fl-tile ${fc}"><b class="${/^\d$/.test(d.lv)?"":"multi"}">${esc(d.lv)}</b><span>${/^\d/.test(d.lv)?"층":""}</span></div>
     <div class="body">
       ${multi?`<div class="rs">${esc(rById(d.r).ko)}</div>`:""}
-      <div class="top"><span class="name">${esc(d.ko)}</span>${d.no?`<span class="no">${esc(noLabel(d))}</span>`:""}</div>
+      <div class="top"><span class="name">${esc(d.ko)}</span>${michOf(d)?`<span class="mich">★ 미쉐린 ${michOf(d)}스타</span>`:""}${d.no?`<span class="no">${esc(noLabel(d))}</span>`:""}</div>
       ${nm?`<div class="sub">${esc(d.en)}${d.zh?" · "+esc(d.zh):""}</div>`:""}
-      <div class="meta"><span class="tag">${esc(nm?d.up:d.g)}</span>${esc(nm?koSt(d.st):d.st)}</div>
+      <div class="meta">${d.g==="식당"&&d.c?`<span class="tag cat">${esc(d.c)}</span>`:""}<span class="tag">${esc(nm?d.up:d.g)}</span>${esc(nm?koSt(d.st):d.st)}</div>
       ${d.note?`<div class="note">${esc(d.note)}</div>`:""}
       <div class="acts"><button class="btn copy">카톡 답변 복사</button>${hasMap(d)?`<button class="btn mapgo">지도</button>`:""}${d.tel?`<a class="btn" href="tel:${d.tel.split(" / ")[0].replace(/\s/g,"")}">전화</a>`:""}</div>
     </div>`;
@@ -222,13 +229,13 @@ if(/[?&]debug=1/.test(location.search)){const box=document.createElement("div");
   try{
     RES=await fetch("data/resorts.json",{cache:"no-cache"}).then(r=>{if(!r.ok)throw 0;return r.json()});
     const all=await Promise.all(RES.map(r=>fetch(`data/${r.id}.json`,{cache:"no-cache"}).then(x=>x.ok?x.json():[]).catch(()=>[])));
-    all.forEach((arr,i)=>arr.forEach(d=>{d.r=RES[i].id;d.k=[d.ko,d.en,d.zh,d.up,d.no,RES[i].ko,RES[i].en].map(norm).join("|");d.nk=norm(d.no);DATA.push(d)}));
+    all.forEach((arr,i)=>arr.forEach(d=>{d.r=RES[i].id;d.k=[d.ko,d.en,d.zh,d.up,d.c,d.no,RES[i].ko,RES[i].en].map(norm).join("|");d.nk=norm(d.no);DATA.push(d)}));
   }catch(e){$("list").innerHTML='<li class="status">데이터를 불러오지 못했어요. 인터넷 연결을 확인하고 새로고침하세요. (PC에서 파일을 더블클릭해 열면 동작하지 않고, GitHub Pages 주소로 열어야 해요.)</li>';return}
   $("total").textContent=DATA.length+"곳";
   const opts=[["all","전체 리조트"],...RES.map(r=>[r.id,r.ko])];
-  if(RES.length>1)chips($("rsc"),opts,"rs",rs,v=>{rs=v;limit=60;drawFloors();render();if(!$("mapView").classList.contains("hide"))drawMap(mf)});
+  if(RES.length>1)chips($("rsc"),opts,"rs",rs,v=>{rs=v;limit=60;drawFloors();drawCui();render();if(!$("mapView").classList.contains("hide"))drawMap(mf)});
   else{rs=RES[0].id;$("rsc").style.display="none"}
-  chips($("grp"),GROUPS.map(x=>[x,x]),"gr",g,v=>{g=v;limit=60;render()});
+  chips($("grp"),GROUPS.map(x=>[x,x]),"gr",g,v=>{g=v;limit=60;drawCui();render()});
   drawFloors();render();
 })();
 </script>
