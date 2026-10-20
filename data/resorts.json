@@ -98,6 +98,15 @@
   "mapNote": "평면도에 매장번호가 없어요. 층과 건물(모피어스·누와·그랜드 하얏트·SOHO)로 찾아 주세요. 3층(Kids' City)은 지도가 없어요."
  },
  {
+  "id": "studiocity",
+  "ko": "스튜디오 시티",
+  "en": "Studio City Macau",
+  "zh": "澳門新濠影滙",
+  "updated": "2026-10-20",
+  "maps": [],
+  "mapNote": ""
+ },
+ {
   "id": "wynnpalace",
   "ko": "윈 팰리스",
   "en": "Wynn Palace",
