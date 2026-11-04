@@ -76,6 +76,19 @@ footer{font-size:12px;color:var(--muted);padding:6px 18px 28px;line-height:1.6}
 .zb{font:inherit;font-size:15px;min-width:40px;height:38px;padding:0 12px;border-radius:9px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
 .mapbox{position:relative;overflow:auto;background:#fff;border:1px solid var(--line);border-radius:12px;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y}
 .mapbox img{display:block;max-width:none;user-select:none;-webkit-user-drag:none}
+.mapin{position:relative;display:inline-block;vertical-align:top}
+.pin{position:absolute;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:#E5202E;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.45);pointer-events:none;z-index:2}
+.pin::after{content:"";position:absolute;inset:-8px;border-radius:50%;border:2px solid #E5202E;animation:pp 1.4s ease-out infinite}
+@keyframes pp{0%{transform:scale(.4);opacity:1}100%{transform:scale(1.5);opacity:0}}
+@media (prefers-reduced-motion:reduce){.pin::after{animation:none;opacity:.6}}
+.pinlab{position:absolute;transform:translate(-50%,calc(-100% - 13px));background:#E5202E;color:#fff;font-size:13px;font-weight:700;padding:3px 9px;border-radius:7px;white-space:nowrap;pointer-events:none;z-index:2;box-shadow:0 1px 4px rgba(0,0,0,.35)}
+.btn.pinbtn{border-color:#E5202E;color:#E5202E;font-weight:700}
+.mapbox.full{position:fixed;inset:0;z-index:30;height:auto!important;border:0;border-radius:0;background:#fff}
+body.mapfull{overflow:hidden}
+.fullbar{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));right:10px;z-index:31;display:none;gap:8px}
+body.mapfull .fullbar{display:flex}
+.fullbar button{width:46px;height:46px;border-radius:23px;border:0;background:rgba(22,33,46,.78);color:#fff;font:inherit;font-size:22px;line-height:1;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.fullbar button:focus-visible{outline:2px solid #fff;outline-offset:2px}
 .maphint{font-size:12.5px;color:var(--muted);padding:8px 2px 0;line-height:1.5}
 .hide{display:none!important}
 [hidden]{display:none!important}
@@ -118,17 +131,18 @@ footer{font-size:12px;color:var(--muted);padding:6px 18px 28px;line-height:1.6}
     <button class="zb" id="zFit">맞춤</button>
     <button class="zb" id="zIn" aria-label="확대">+</button>
   </div>
-  <div class="mapbox" id="mapbox"><img id="mapImg" alt=""></div>
+  <div class="mapbox" id="mapbox"><div class="mapin" id="mapin"><img id="mapImg" alt=""><span class="pin" id="pin" hidden></span><span class="pinlab" id="pinlab" hidden></span></div></div>
   <p class="maphint" id="maphint"></p>
+  <div class="fullbar" id="fullbar"><button id="fOut" aria-label="축소">−</button><button id="fIn" aria-label="확대">+</button><button id="fClose" aria-label="크게 보기 닫기">✕</button></div>
 </div>
 <footer>
-  출처: 각 리조트 공식 사이트(매장·식당·부대시설), 공식 홍콩판 사이트(중국어 번체명), 층별 평면도(화장실·ATM 위치, 지도 탭). 한글명은 통용 표기이고 ATM 위치는 평면도 아이콘 기준 추정이에요. 입점·운영시간은 바뀔 수 있으니 중요한 안내 전에는 매장에 확인하세요. <span class="ver">v2026-10-20</span>
+  출처: 각 리조트 공식 사이트(매장·식당·부대시설), 공식 홍콩판 사이트(중국어 번체명), 층별 평면도(화장실·ATM 위치, 지도 탭). 한글명은 통용 표기이고 ATM 위치는 평면도 아이콘 기준 추정이에요. 입점·운영시간은 바뀔 수 있으니 중요한 안내 전에는 매장에 확인하세요. <span class="ver">v2026-11-04</span>
 </footer>
 </div>
 <button class="totop hide" id="totop" aria-label="맨 위로">↑</button>
 <div class="toast" id="toast" role="status"></div>
 <script>
-const GROUPS=["전체","쇼핑","식당","화장실","은행·ATM","편의시설","호텔","즐길거리"];
+const GROUPS=["전체","쇼핑","식당","화장실","은행·ATM","편의시설","호텔","즐길거리","기타"];
 let RES=[],DATA=[],rs="all",g="전체",f="전체",cu="전체",limit=60;
 const CUIS=["중식","차찬텡","일식","한식","양식","아시안","뷔페","패스트푸드","카페·디저트","바·라운지","푸드코트·식당가","기타"];
 const michOf=d=>{const m=(d.up||"").match(/미쉐린 (\d)스타/);return m?+m[1]:0};
@@ -139,18 +153,20 @@ const esc=s=>(s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"
 const rById=id=>RES.find(r=>r.id===id);
 function chips(el,arr,cls,sel,cb){el.innerHTML="";arr.forEach(([v,l])=>{const b=document.createElement("button");b.className="chip "+cls;b.dataset.v=v;if(cls==="mf")b.dataset.m=v;b.textContent=l;b.setAttribute("aria-pressed",v===sel);b.onclick=()=>{[...el.children].forEach(c=>c.setAttribute("aria-pressed",c===b));cb(v)};el.appendChild(b)})}
 function floorsFor(){const s=new Set(DATA.filter(d=>rs==="all"||d.r===rs).flatMap(d=>d.lv.split(/[·,]/)).filter(x=>/^\d$/.test(x)));return ["전체",...[...s].sort()]}
+function drawGroups(){const have=new Set(DATA.filter(d=>rs==="all"||d.r===rs).map(d=>d.g));const arr=GROUPS.filter(x=>x==="전체"||have.has(x));if(!arr.includes(g))g="전체";chips($("grp"),arr.map(x=>[x,x]),"gr",g,v=>{g=v;limit=60;drawCui();render()})}
 function drawFloors(){if(!floorsFor().includes(f))f="전체";chips($("flr"),floorsFor().map(x=>[x,x==="전체"?"전체 층":x+"층"]),"fl",f,v=>{f=v;limit=60;render()})}
 const koSt=s=>{if(!s)return"";const m=s.match(/\(([^)]+)\)/);return m?m[1]:s};
 const lvLabel=lv=>/^\d$/.test(lv)?lv+"층":lv;
 function noLabel(d){if(!d.no)return"";if(/^(K|STK)/i.test(d.no))return"키오스크 "+d.no;if(/^\d/.test(d.no))return d.no+"호";return d.no}
 function copyText(d){const rn=rById(d.r).ko;
   if(d.g==="쇼핑"||d.g==="식당"){let s=`${d.ko} (${d.en}${d.zh?" / "+d.zh:""})\n위치: ${rn} ${lvLabel(d.lv)} ${noLabel(d)}`;const st=koSt(d.st);if(st)s+=`, ${st}`;if(d.g==="식당"&&d.c)s+=`\n종류: ${d.c}${michOf(d)?` · 미쉐린 ${michOf(d)}스타`:""}`;if(d.tel)s+=`\n전화: ${d.tel.split(" / ")[0]}`;return s}
-  let s=`${d.ko}: ${rn} ${lvLabel(d.lv)}, ${d.st}`;if(d.note)s+=`\n${d.note}`;return s}
-function score(d,q){if(!q)return 0;if(d.nk===q)return 0;if(norm(d.ko).startsWith(q)||norm(d.en).startsWith(q)||norm(d.zh).startsWith(q))return 1;if(d.nk.includes(q))return 2;return 3}
+  const loc=d.st.includes(" — ")?d.st.split(" — ").slice(1).join(" — "):d.st;let s=`${pinName(d)}: ${rn} ${lvLabel(d.lv)}, ${loc}`;if(d.note)s+=`\n${d.note}`;if(d.tel)s+=`\n전화: ${d.tel}`;if(d.url)s+=`\n자세히: ${d.url}`;return s}
+function score(d,q){if(!q)return 0;if(d.nk===q)return 0;if(norm(d.ko).startsWith(q)||norm(d.en).startsWith(q)||norm(d.zh).startsWith(q)||(d.g!=="쇼핑"&&d.g!=="식당"&&norm(pinName(d)).startsWith(q)))return 1;if(d.nk.includes(q))return 2;return 3}
 function hasMap(d){const r=rById(d.r);return r.maps&&r.maps.some(m=>m.floor===d.lv.charAt(0))}
 function render(){
-  const raw=$("q").value.trim(),q=norm(raw);$("clr").classList.toggle("on",!!raw);
-  let r=DATA.filter(d=>(rs==="all"||d.r===rs)&&(g==="전체"||d.g===g)&&(g!=="식당"||cu==="전체"||(cu==="미쉐린"?michOf(d)>0:d.c===cu))&&(f==="전체"||d.lv.split(/[·,]/).includes(f)||d.lv===f)&&(!q||d.k.includes(q)));
+  const raw=$("q").value.trim(),q=norm(raw.replace(/(\d[a-z]?)\s*(호점|호|번)$/i,"$1"));$("clr").classList.toggle("on",!!raw);
+  const qw=raw.replace(/(\d[a-z]?)\s*(호점|호|번)$/i,"$1").split(/\s+/).map(norm).filter(Boolean);
+  let r=DATA.filter(d=>(rs==="all"||d.r===rs)&&(g==="전체"||d.g===g)&&(g!=="식당"||cu==="전체"||(cu==="미쉐린"?michOf(d)>0:d.c===cu))&&(f==="전체"||d.lv.split(/[·,]/).includes(f)||d.lv===f)&&(!q||d.k.includes(q)||(qw.length>1&&qw.every(w=>d.k.includes(w)))));
   if(q)r=r.map((d,i)=>[score(d,q),i,d]).sort((a,b)=>a[0]-b[0]||a[1]-b[1]).map(x=>x[2]);
   $("cnt").textContent=r.length?`${r.length}곳`:"";
   const ul=$("list");ul.innerHTML="";
@@ -163,14 +179,14 @@ function render(){
     li.innerHTML=`<div class="fl-tile ${fc}"><b class="${/^\d$/.test(d.lv)?"":"multi"}">${esc(d.lv)}</b><span>${/^\d/.test(d.lv)?"층":""}</span></div>
     <div class="body">
       ${multi?`<div class="rs">${esc(rById(d.r).ko)}</div>`:""}
-      <div class="top"><span class="name">${esc(d.ko)}</span>${michOf(d)?`<span class="mich">★ 미쉐린 ${michOf(d)}스타</span>`:""}${d.no?`<span class="no">${esc(noLabel(d))}</span>`:""}</div>
+      <div class="top"><span class="name">${esc(nm?d.ko:pinName(d))}</span>${michOf(d)?`<span class="mich">★ 미쉐린 ${michOf(d)}스타</span>`:""}${d.no?`<span class="no">${esc(noLabel(d))}</span>`:""}</div>
       ${nm?`<div class="sub">${esc(d.en)}${d.zh?" · "+esc(d.zh):""}</div>`:""}
       <div class="meta">${d.g==="식당"&&d.c?`<span class="tag cat">${esc(d.c)}</span>`:""}<span class="tag">${esc(nm?d.up:d.g)}</span>${esc(nm?koSt(d.st):d.st)}</div>
       ${d.note?`<div class="note">${esc(d.note)}</div>`:""}
-      <div class="acts"><button class="btn copy">카톡 답변 복사</button>${hasMap(d)?`<button class="btn mapgo">지도</button>`:""}${d.tel?`<a class="btn" href="tel:${d.tel.split(" / ")[0].replace(/\s/g,"")}">전화</a>`:""}</div>
+      <div class="acts"><button class="btn copy">카톡 답변 복사</button>${hasMap(d)?(d.x!=null?`<button class="btn mapgo pinbtn">📍 지도에서 위치</button>`:`<button class="btn mapgo">지도</button>`):""}${d.url?`<a class="btn" href="${esc(d.url)}" target="_blank" rel="noopener">홈페이지</a>`:""}${d.tel?`<a class="btn" href="tel:${d.tel.split(" / ")[0].replace(/\s/g,"")}">전화</a>`:""}</div>
     </div>`;
     li.querySelector(".copy").onclick=()=>copy(copyText(d));
-    const mg=li.querySelector(".mapgo");if(mg)mg.onclick=()=>showMap(d.r,d.lv.charAt(0));
+    const mg=li.querySelector(".mapgo");if(mg)mg.onclick=()=>showMap(d.r,d.lv.charAt(0),d.x!=null?d:null);
     ul.appendChild(li)});
   $("more").hidden=r.length<=limit}
 $("more").onclick=()=>{limit+=60;render()};
@@ -194,15 +210,26 @@ function drawMap(fl){
   mapR=r.id;if(!r.maps.some(m=>m.floor===fl))fl=r.maps[0].floor;mf=fl;
   chips($("mfl"),r.maps.map(m=>[m.floor,(rs==="all"?r.ko+" ":"")+m.floor+"층"]),"mf",fl,v=>drawMap(v));
   const m=r.maps.find(x=>x.floor===fl);img.alt=`${r.ko} ${fl}층 평면도`;
-  $("maphint").textContent="두 손가락으로 벌리거나 + 버튼으로 확대하고, 끌어서 이동하세요. 이미지를 길게 누르면 휴대폰에 저장할 수 있어요. "+(r.mapNote||"");
-  img.onload=()=>{sizeBox();fit()};if(!img.src.endsWith(m.file))img.src=m.file;else{sizeBox();fit()}}
-function showTab(m){$("tabS").setAttribute("aria-selected",!m);$("tabM").setAttribute("aria-selected",m);$("searchHead").classList.toggle("hide",m);$("searchView").classList.toggle("hide",m);$("mapView").classList.toggle("hide",!m);window.scrollTo(0,0);if(m)drawMap(mf)}
-function showMap(rid,fl){mapR=rid;mf=fl;showTab(true)}
-$("tabS").onclick=()=>showTab(false);$("tabM").onclick=()=>showTab(true);
+  $("maphint").textContent="지도를 한 번 누르면 화면 가득 크게 볼 수 있어요. 두 손가락으로 벌리거나 + 버튼으로 확대하고, 끌어서 이동하세요. 이미지를 길게 누르면 휴대폰에 저장할 수 있어요. "+(r.mapNote||"");
+  img.onload=()=>{sizeBox();fit();placePin()};if(!img.src.endsWith(m.file))img.src=m.file;else{sizeBox();fit();placePin()}}
+function showTab(m){if(full)closeFull(false);$("tabS").setAttribute("aria-selected",!m);$("tabM").setAttribute("aria-selected",m);$("searchHead").classList.toggle("hide",m);$("searchView").classList.toggle("hide",m);$("mapView").classList.toggle("hide",!m);window.scrollTo(0,0);if(m)drawMap(mf)}
+let pinD=null;
+function pinName(d){if(d.g!=="쇼핑"&&d.g!=="식당"&&d.st&&d.st.includes(" — ")){const s=d.st.split(" — ")[0].replace(/\([^)]*\)/g,"").trim();if(/[가-힣]/.test(s))return s}return d.ko+(d.no?" "+noLabel(d):"")}
+function placePin(){const p=$("pin"),l=$("pinlab");document.querySelectorAll(".pin.pin2").forEach(e=>e.remove());if(!pinD||pinD.r!==mapR||pinD.lv.charAt(0)!==mf){p.hidden=l.hidden=true;return}
+  const pts=[[pinD.x,pinD.y],...(pinD.pts||[])];
+  p.style.left=l.style.left=pinD.x+"%";p.style.top=l.style.top=pinD.y+"%";l.textContent=pinName(pinD)+(pts.length>1?` (${pts.length}곳)`:"");p.hidden=l.hidden=false;
+  pts.slice(1).forEach(([x,y])=>{const s=document.createElement("span");s.className="pin pin2";s.style.left=x+"%";s.style.top=y+"%";$("mapin").appendChild(s)});
+  const xs=pts.map(q=>q[0]),ys=pts.map(q=>q[1]),x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys);
+  const ar=(img.naturalHeight||1)/(img.naturalWidth||1);let z=Math.min(6,Math.max(1,700/fitW*1.6));
+  if(pts.length>1)z=Math.max(1,Math.min(z,box.clientWidth/((x1-x0)/100*fitW+120),box.clientHeight/((y1-y0)/100*fitW*ar+160)));
+  zoom=z;img.style.width=Math.round(fitW*zoom)+"px";
+  box.scrollLeft=(x0+x1)/200*img.offsetWidth-box.clientWidth/2;box.scrollTop=(y0+y1)/200*img.offsetHeight-box.clientHeight/2}
+function showMap(rid,fl,d){mapR=rid;mf=fl;pinD=d||null;showTab(true)}
+$("tabS").onclick=()=>showTab(false);$("tabM").onclick=()=>{pinD=null;showTab(true)};
 $("zIn").onclick=()=>{zoom=Math.min(6,zoom*1.4);applyZoom()};
 $("zOut").onclick=()=>{zoom=Math.max(1,zoom/1.4);applyZoom()};
 $("zFit").onclick=fit;
-window.addEventListener("resize",()=>{if(!$("mapView").classList.contains("hide")&&img.src){sizeBox();fitW=box.clientWidth;applyZoom()}});
+window.addEventListener("resize",()=>{if(!$("mapView").classList.contains("hide")&&img.src){if(!full)sizeBox();fitW=box.clientWidth;applyZoom()}});
 let pd=0,pz=1;const dist=e=>Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
 box.addEventListener("touchstart",e=>{if(e.touches.length===2){pd=dist(e);pz=zoom}},{passive:true});
 box.addEventListener("touchmove",e=>{if(e.touches.length===2&&pd){e.preventDefault();const r=box.getBoundingClientRect();const cx=(e.touches[0].clientX+e.touches[1].clientX)/2-r.left,cy=(e.touches[0].clientY+e.touches[1].clientY)/2-r.top;zoom=Math.min(6,Math.max(1,pz*dist(e)/pd));applyZoom(cx,cy)}},{passive:false});
@@ -212,6 +239,28 @@ window.addEventListener("mousemove",e=>{if(drag){box.scrollLeft=drag.l-(e.client
 window.addEventListener("mouseup",()=>{drag=null;box.style.cursor=""});
 box.addEventListener("wheel",e=>{if(e.ctrlKey||e.metaKey){e.preventDefault();const r=box.getBoundingClientRect();zoom=Math.min(6,Math.max(1,zoom*(e.deltaY<0?1.15:1/1.15)));applyZoom(e.clientX-r.left,e.clientY-r.top)}},{passive:false});
 
+/* 지도 크게 보기 */
+let full=false,saved=null,tap=null,ptrs=0;
+function openFull(){if(full||!img.src)return;const iw=img.offsetWidth||1,ih=img.offsetHeight||1;
+  saved={w:img.style.width,l:box.scrollLeft,t:box.scrollTop,z:zoom,f:fitW};
+  const cx=(box.scrollLeft+box.clientWidth/2)/iw,cy=(box.scrollTop+box.clientHeight/2)/ih;
+  full=true;document.body.classList.add("mapfull");box.classList.add("full");
+  fitW=box.clientWidth;const ar=(img.naturalWidth||1)/(img.naturalHeight||1);
+  zoom=Math.min(6,Math.max(1,iw/fitW,box.clientHeight*ar/fitW));img.style.width=Math.round(fitW*zoom)+"px";
+  box.scrollLeft=cx*img.offsetWidth-box.clientWidth/2;box.scrollTop=cy*img.offsetHeight-box.clientHeight/2;
+  try{history.pushState({mapfull:1},"")}catch(e){}}
+function closeFull(fromPop){if(!full)return;full=false;document.body.classList.remove("mapfull");box.classList.remove("full");
+  sizeBox();if(saved){fitW=saved.f;zoom=saved.z;img.style.width=saved.w;box.scrollLeft=saved.l;box.scrollTop=saved.t}
+  if(!fromPop&&history.state&&history.state.mapfull){try{history.back()}catch(e){}}}
+window.addEventListener("popstate",()=>{if(full)closeFull(true)});
+box.addEventListener("pointerdown",e=>{ptrs++;tap=ptrs===1?{x:e.clientX,y:e.clientY,t:Date.now()}:null});
+box.addEventListener("pointermove",e=>{if(tap&&Math.hypot(e.clientX-tap.x,e.clientY-tap.y)>8)tap=null});
+box.addEventListener("pointerup",e=>{ptrs=Math.max(0,ptrs-1);if(tap&&!full&&Date.now()-tap.t<400&&Math.hypot(e.clientX-tap.x,e.clientY-tap.y)<=8)openFull();tap=null});
+box.addEventListener("pointercancel",()=>{ptrs=Math.max(0,ptrs-1);tap=null});
+$("fClose").onclick=()=>closeFull(false);
+$("fIn").onclick=()=>{zoom=Math.min(6,zoom*1.4);applyZoom()};
+$("fOut").onclick=()=>{zoom=Math.max(1,zoom/1.4);applyZoom()};
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&full)closeFull(false)});
 /* scroll-to-top */
 window.addEventListener("scroll",()=>{$("totop").classList.toggle("hide",window.scrollY<400)},{passive:true});
 $("totop").onclick=()=>{window.scrollTo({top:0});};
@@ -229,13 +278,13 @@ if(/[?&]debug=1/.test(location.search)){const box=document.createElement("div");
   try{
     RES=await fetch("data/resorts.json",{cache:"no-cache"}).then(r=>{if(!r.ok)throw 0;return r.json()});
     const all=await Promise.all(RES.map(r=>fetch(`data/${r.id}.json`,{cache:"no-cache"}).then(x=>x.ok?x.json():[]).catch(()=>[])));
-    all.forEach((arr,i)=>arr.forEach(d=>{d.r=RES[i].id;d.k=[d.ko,d.en,d.zh,d.up,d.c,d.no,RES[i].ko,RES[i].en].map(norm).join("|");d.nk=norm(d.no);DATA.push(d)}));
+    all.forEach((arr,i)=>arr.forEach(d=>{d.r=RES[i].id;d.k=[d.ko,d.en,d.zh,d.up,d.c,d.no,d.st,RES[i].ko,RES[i].en].map(norm).join("|");d.nk=norm(d.no);DATA.push(d)}));
   }catch(e){$("list").innerHTML='<li class="status">데이터를 불러오지 못했어요. 인터넷 연결을 확인하고 새로고침하세요. (PC에서 파일을 더블클릭해 열면 동작하지 않고, GitHub Pages 주소로 열어야 해요.)</li>';return}
   $("total").textContent=DATA.length+"곳";
   const opts=[["all","전체 리조트"],...RES.map(r=>[r.id,r.ko])];
-  if(RES.length>1)chips($("rsc"),opts,"rs",rs,v=>{rs=v;limit=60;drawFloors();drawCui();render();if(!$("mapView").classList.contains("hide"))drawMap(mf)});
+  if(RES.length>1)chips($("rsc"),opts,"rs",rs,v=>{rs=v;limit=60;drawGroups();drawFloors();drawCui();render();if(!$("mapView").classList.contains("hide"))drawMap(mf)});
   else{rs=RES[0].id;$("rsc").style.display="none"}
-  chips($("grp"),GROUPS.map(x=>[x,x]),"gr",g,v=>{g=v;limit=60;drawCui();render()});
+  drawGroups();
   drawFloors();render();
 })();
 </script>
