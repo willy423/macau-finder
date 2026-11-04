@@ -1226,7 +1226,8 @@
   "up": "수영장",
   "st": "스타 타워 3층",
   "tel": "",
-  "note": "07:00~22:00"
+  "note": "07:00~22:00 · 스타 타워 투숙객 전용",
+  "url": "https://studiocity-macau.com/en/amenities/indoor-swimming-pool-star-tower"
  },
  {
   "g": "편의시설",
@@ -1238,7 +1239,8 @@
   "up": "수영장",
   "st": "에픽 타워 3층",
   "tel": "",
-  "note": "07:00~22:00"
+  "note": "07:00~22:00",
+  "url": "https://studiocity-macau.com/en/amenities/indoor-swimming-pool-epic-tower"
  },
  {
   "g": "편의시설",
@@ -1250,7 +1252,8 @@
   "up": "수영장",
   "st": "스타 타워·셀러브리티 타워 3층",
   "tel": "",
-  "note": "09:00~20:00"
+  "note": "09:00~20:00",
+  "url": "https://studiocity-macau.com/en/amenities/outdoor-pool"
  },
  {
   "g": "편의시설",
@@ -1262,7 +1265,8 @@
   "up": "피트니스",
   "st": "스타 타워 3층",
   "tel": "",
-  "note": "24시간(상주 직원 07:00~22:00)"
+  "note": "24시간(상주 직원 07:00~22:00)",
+  "url": "https://studiocity-macau.com/en/amenities/fitness-center-at-star-tower"
  },
  {
   "g": "편의시설",
@@ -1274,7 +1278,8 @@
   "up": "피트니스",
   "st": "셀러브리티 타워 3층",
   "tel": "",
-  "note": "24시간(상주 직원 07:00~22:00)"
+  "note": "24시간(상주 직원 07:00~22:00)",
+  "url": "https://studiocity-macau.com/en/amenities/fitness-center-at-celebrity-tower"
  },
  {
   "g": "편의시설",
@@ -1286,7 +1291,8 @@
   "up": "피트니스",
   "st": "에픽 타워 3층",
   "tel": "",
-  "note": "24시간(상주 직원 07:00~22:00)"
+  "note": "24시간(상주 직원 07:00~22:00)",
+  "url": "https://studiocity-macau.com/en/amenities/fitness-center-epic-tower"
  },
  {
   "g": "편의시설",
@@ -1298,7 +1304,8 @@
   "up": "미용실",
   "st": "셀러브리티 타워 3층",
   "tel": "",
-  "note": "12:00~22:00"
+  "note": "12:00~22:00",
+  "url": "https://studiocity-macau.com/en/amenities"
  },
  {
   "g": "편의시설",
@@ -1310,7 +1317,8 @@
   "up": "미용실",
   "st": "에픽 타워 3층",
   "tel": "",
-  "note": "12:00~22:00"
+  "note": "12:00~22:00",
+  "url": "https://studiocity-macau.com/en/amenities/beauty-salon-epic-tower"
  },
  {
   "g": "편의시설",
@@ -1322,7 +1330,8 @@
   "up": "스파",
   "st": "스타 타워 3층",
   "tel": "+853 8865 1888",
-  "note": "11:00~23:00"
+  "note": "11:00~23:00",
+  "url": "https://studiocity-macau.com/en/amenities/zensa-spa"
  },
  {
   "g": "편의시설",
@@ -1334,7 +1343,8 @@
   "up": "스파",
   "st": "에픽 타워 3층",
   "tel": "+853 8865 1152",
-  "note": "11:00~23:00"
+  "note": "11:00~23:00",
+  "url": "https://studiocity-macau.com/en/amenities/spa-epic-tower"
  },
  {
   "g": "편의시설",
@@ -1346,19 +1356,21 @@
   "up": "스파",
   "st": "W 마카오 3층",
   "tel": "+853 8865 1326",
-  "note": "10:00~23:00"
+  "note": "10:00~23:00",
+  "url": "https://studiocity-macau.com/en/amenities/away-spa"
  },
  {
   "g": "편의시설",
-  "lv": "",
+  "lv": "2",
   "no": "",
   "en": "iRad Hospital",
   "ko": "iRad 병원",
   "zh": "",
   "up": "의료",
-  "st": "공식 사이트에 위치 표기 없음",
+  "st": "이스트 윙 2층 2007·2009~2017호",
   "tel": "+853 2893 8831",
-  "note": "10:00~19:00"
+  "note": "10:00~19:00",
+  "url": "https://studiocity-macau.com/en/amenities/irad-hospital"
  },
  {
   "g": "즐길거리",
@@ -1370,7 +1382,8 @@
   "up": "워터파크",
   "st": "3층 · 실내 구역은 타임스스퀘어 에스컬레이터로 입장",
   "tel": "+853 8865 6767",
-  "note": "12:00~20:00(시즌별 다름)"
+  "note": "12:00~20:00 · 휴장일은 홈페이지 달력 확인 · ⚠ 야외 구역 2026-11-02~2027-04-29 휴장(실내 구역 운영)",
+  "url": "https://studiocity-macau.com/en/attractions/studio-city-water-park"
  },
  {
   "g": "즐길거리",
@@ -1382,7 +1395,8 @@
   "up": "관람차",
   "st": "이스트 윙 3층",
   "tel": "+853 8865 6767",
-  "note": "14:00~20:00(요일별 다름)"
+  "note": "14:00~20:00 · 휴무일은 홈페이지 달력 확인",
+  "url": "https://studiocity-macau.com/en/attractions/golden-reel"
  },
  {
   "g": "즐길거리",
@@ -1394,7 +1408,8 @@
   "up": "키즈 놀이시설",
   "st": "웨스트 윙 3층",
   "tel": "+853 8865 6767",
-  "note": "평일 11:00~19:00 · 주말·공휴일 10:30~19:00"
+  "note": "평일 11:00~19:00 · 주말·공휴일 10:30~19:00 · 휴무일은 홈페이지 달력 확인",
+  "url": "https://studiocity-macau.com/en/attractions/super-fun-zone"
  },
  {
   "g": "즐길거리",
@@ -1406,7 +1421,8 @@
   "up": "체험 시설",
   "st": "웨스트 윙 2층",
   "tel": "",
-  "note": "12:00~20:00"
+  "note": "매일 12:00 개장 · 마감 시간은 홈페이지 확인",
+  "url": "https://studiocity-macau.com/en/attractions/studio-city-stardust"
  },
  {
   "g": "즐길거리",
@@ -1417,8 +1433,9 @@
   "zh": "",
   "up": "영화관",
   "st": "2층",
-  "tel": "+853 8865 6767",
-  "note": "월~수 16:30~22:30 · 그 외 11:30~22:30"
+  "tel": "",
+  "note": "매표소 11:30~22:30 · 공휴일 10:30~22:30",
+  "url": "https://studiocity-macau.com/en/attractions/cinema-booking"
  },
  {
   "g": "즐길거리",
@@ -1430,7 +1447,8 @@
   "up": "스케이트 파크",
   "st": "이스트 윙 3층",
   "tel": "+853 8865 6767",
-  "note": "12:00~21:00"
+  "note": "12:00~21:00",
+  "url": "https://studiocity-macau.com/en/attractions/studio-city-skate-park"
  },
  {
   "g": "즐길거리",
@@ -1442,7 +1460,8 @@
   "up": "VR·게임",
   "st": "이스트 윙 2층",
   "tel": "",
-  "note": "12:00~20:00"
+  "note": "12:00~21:00",
+  "url": "https://studiocity-macau.com/en/attractions/legend-heroes-park"
  },
  {
   "g": "즐길거리",
@@ -1454,7 +1473,8 @@
   "up": "키즈 놀이시설",
   "st": "",
   "tel": "",
-  "note": "10:30~19:30(주말 20:30)"
+  "note": "10:30~19:30",
+  "url": "https://studiocity-macau.com/en/attractions/nickelodeon-town"
  },
  {
   "g": "즐길거리",
@@ -1466,7 +1486,8 @@
   "up": "실내 골프",
   "st": "",
   "tel": "",
-  "note": "24시간"
+  "note": "24시간(셀프 이용)",
+  "url": "https://studiocity-macau.com/en/attractions/sim-golf"
  },
  {
   "g": "즐길거리",
@@ -1477,7 +1498,8 @@
   "zh": "",
   "up": "클럽",
   "st": "",
-  "tel": "",
-  "note": "18:00~04:00"
+  "tel": "+853 6333 7557",
+  "note": "18:00~04:00",
+  "url": "https://studiocity-macau.com/en/attractions/club-mop"
  }
 ]
