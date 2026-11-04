@@ -76,6 +76,12 @@ footer{font-size:12px;color:var(--muted);padding:6px 18px 28px;line-height:1.6}
 .zb{font:inherit;font-size:15px;min-width:40px;height:38px;padding:0 12px;border-radius:9px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
 .mapbox{position:relative;overflow:auto;background:#fff;border:1px solid var(--line);border-radius:12px;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y}
 .mapbox img{display:block;max-width:none;user-select:none;-webkit-user-drag:none}
+.compass{position:sticky;top:8px;left:8px;width:0;height:0;z-index:5}
+.compass .cp{position:absolute;left:0;top:0;width:58px;height:58px;border-radius:50%;background:rgba(255,255,255,.92);border:1px solid #c9ced6;box-shadow:0 1px 4px rgba(0,0,0,.2);pointer-events:none}
+.compass .cp span{position:absolute;left:50%;top:50%;width:18px;height:18px;margin:-9px 0 0 -9px;font-size:12px;font-weight:700;line-height:18px;text-align:center;color:#334}
+.compass .cp span.n{color:#E5202E}
+.compass .cp i{position:absolute;left:50%;top:50%;width:2px;height:16px;margin:-16px 0 0 -1px;background:#E5202E;transform-origin:50% 100%;border-radius:1px}
+.mapbox.full .compass{top:calc(8px + env(safe-area-inset-top,0px))}
 .mapin{position:relative;display:inline-block;vertical-align:top}
 .pin{position:absolute;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:#E5202E;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.45);pointer-events:none;z-index:2}
 .pin::after{content:"";position:absolute;inset:-8px;border-radius:50%;border:2px solid #E5202E;animation:pp 1.4s ease-out infinite}
@@ -131,7 +137,7 @@ body.mapfull .fullbar{display:flex}
     <button class="zb" id="zFit">맞춤</button>
     <button class="zb" id="zIn" aria-label="확대">+</button>
   </div>
-  <div class="mapbox" id="mapbox"><div class="mapin" id="mapin"><img id="mapImg" alt=""><span class="pin" id="pin" hidden></span><span class="pinlab" id="pinlab" hidden></span></div></div>
+  <div class="mapbox" id="mapbox"><div class="compass" id="compass" hidden></div><div class="mapin" id="mapin"><img id="mapImg" alt=""><span class="pin" id="pin" hidden></span><span class="pinlab" id="pinlab" hidden></span></div></div>
   <p class="maphint" id="maphint"></p>
   <div class="fullbar" id="fullbar"><button id="fOut" aria-label="축소">−</button><button id="fIn" aria-label="확대">+</button><button id="fClose" aria-label="크게 보기 닫기">✕</button></div>
 </div>
@@ -206,12 +212,13 @@ function fit(){fitW=box.clientWidth;zoom=1;img.style.width=fitW+"px";box.scrollL
 function mapResort(){return rs!=="all"?rs:(mapR||(RES.find(r=>r.maps&&r.maps.length)||{}).id)}
 function drawMap(fl){
   const r=rById(mapResort());
-  if(!r||!r.maps||!r.maps.length){$("mfl").innerHTML="";img.removeAttribute("src");img.alt="";$("maphint").textContent=(r?r.ko:"이 리조트")+" 지도는 아직 등록되지 않았어요.";box.style.height="0";return}
-  mapR=r.id;if(!r.maps.some(m=>m.floor===fl))fl=r.maps[0].floor;mf=fl;
+  if(!r||!r.maps||!r.maps.length){drawCompass(null);$("mfl").innerHTML="";img.removeAttribute("src");img.alt="";$("maphint").textContent=(r?r.ko:"이 리조트")+" 지도는 아직 등록되지 않았어요.";box.style.height="0";return}
+  mapR=r.id;if(!r.maps.some(m=>m.floor===fl))fl=r.maps[0].floor;mf=fl;drawCompass(r);
   chips($("mfl"),r.maps.map(m=>[m.floor,(rs==="all"?r.ko+" ":"")+m.floor+"층"]),"mf",fl,v=>drawMap(v));
   const m=r.maps.find(x=>x.floor===fl);img.alt=`${r.ko} ${fl}층 평면도`;
   $("maphint").textContent="지도를 한 번 누르면 화면 가득 크게 볼 수 있어요. 두 손가락으로 벌리거나 + 버튼으로 확대하고, 끌어서 이동하세요. 이미지를 길게 누르면 휴대폰에 저장할 수 있어요. "+(r.mapNote||"");
   img.onload=()=>{sizeBox();fit();placePin()};if(!img.src.endsWith(m.file))img.src=m.file;else{sizeBox();fit();placePin()}}
+function drawCompass(r){const c=$("compass");if(!r||r.north==null){c.hidden=true;c.innerHTML="";return}const a=r.north*Math.PI/180;const R=20;let s=`<div class="cp" aria-label="방위 표시"><i style="transform:rotate(${r.north}deg)"></i>`;[["북",0,"n"],["동",90,""],["남",180,""],["서",270,""]].forEach(([t,d,k])=>{const b=a+d*Math.PI/180;s+=`<span class="${k}" style="transform:translate(${(Math.sin(b)*R).toFixed(1)}px,${(-Math.cos(b)*R).toFixed(1)}px)">${t}</span>`});c.innerHTML=s+"</div>";c.hidden=false}
 function showTab(m){if(full)closeFull(false);$("tabS").setAttribute("aria-selected",!m);$("tabM").setAttribute("aria-selected",m);$("searchHead").classList.toggle("hide",m);$("searchView").classList.toggle("hide",m);$("mapView").classList.toggle("hide",!m);window.scrollTo(0,0);if(m)drawMap(mf)}
 let pinD=null;
 function pinName(d){if(d.g!=="쇼핑"&&d.g!=="식당"&&d.st&&d.st.includes(" — ")){const s=d.st.split(" — ")[0].replace(/\([^)]*\)/g,"").trim();if(/[가-힣]/.test(s))return s}return d.ko+(d.no?" "+noLabel(d):"")}
