@@ -169,7 +169,8 @@ function copyText(d){const rn=rById(d.r).ko;
   if(d.g==="쇼핑"||d.g==="식당"){let s=`${d.ko} (${d.en}${d.zh?" / "+d.zh:""})\n위치: ${rn} ${lvLabel(d.lv)} ${noLabel(d)}`;const st=koSt(d.st);if(st)s+=`, ${st}`;if(d.g==="식당"&&d.c)s+=`\n종류: ${d.c}${michOf(d)?` · 미쉐린 ${michOf(d)}스타`:""}`;if(d.tel)s+=`\n전화: ${d.tel.split(" / ")[0]}`;return s}
   const loc=d.st.includes(" — ")?d.st.split(" — ").slice(1).join(" — "):d.st;let s=`${pinName(d)}: ${rn} ${lvLabel(d.lv)}, ${loc}`;if(d.note)s+=`\n${d.note}`;if(d.tel)s+=`\n전화: ${d.tel}`;if(d.url)s+=`\n자세히: ${d.url}`;return s}
 function score(d,q){if(!q)return 0;if(d.nk===q)return 0;if(norm(d.ko).startsWith(q)||norm(d.en).startsWith(q)||norm(d.zh).startsWith(q)||(d.g!=="쇼핑"&&d.g!=="식당"&&norm(pinName(d)).startsWith(q)))return 1;if(d.nk.includes(q))return 2;return 3}
-function hasMap(d){const r=rById(d.r);return r.maps&&r.maps.some(m=>m.floor===d.lv.charAt(0))}
+const mfl=d=>d.mlv||d.lv.charAt(0);
+function hasMap(d){const r=rById(d.r);return r.maps&&r.maps.some(m=>m.floor===mfl(d))}
 function render(){
   const raw=$("q").value.trim(),q=norm(raw.replace(/(\d[a-z]?)\s*(호점|호|번)$/i,"$1"));$("clr").classList.toggle("on",!!raw);
   const qw=raw.replace(/(\d[a-z]?)\s*(호점|호|번)$/i,"$1").split(/\s+/).map(norm).filter(Boolean);
@@ -193,7 +194,7 @@ function render(){
       <div class="acts"><button class="btn copy">카톡 답변 복사</button>${hasMap(d)?(d.x!=null?`<button class="btn mapgo pinbtn">📍 지도에서 위치</button>`:`<button class="btn mapgo">지도</button>`):""}${d.url?`<a class="btn" href="${esc(d.url)}" target="_blank" rel="noopener">홈페이지</a>`:""}${d.tel?`<a class="btn" href="tel:${d.tel.split(" / ")[0].replace(/\s/g,"")}">전화</a>`:""}</div>
     </div>`;
     li.querySelector(".copy").onclick=()=>copy(copyText(d));
-    const mg=li.querySelector(".mapgo");if(mg)mg.onclick=()=>showMap(d.r,d.lv.charAt(0),d.x!=null?d:null);
+    const mg=li.querySelector(".mapgo");if(mg)mg.onclick=()=>showMap(d.r,mfl(d),d.x!=null?d:null);
     ul.appendChild(li)});
   $("more").hidden=r.length<=limit}
 $("more").onclick=()=>{limit+=60;render()};
@@ -223,7 +224,7 @@ function drawCompass(r){const c=$("compass");if(!r||r.north==null){c.hidden=true
 function showTab(m){if(full)closeFull(false);$("tabS").setAttribute("aria-selected",!m);$("tabM").setAttribute("aria-selected",m);$("searchHead").classList.toggle("hide",m);$("searchView").classList.toggle("hide",m);$("mapView").classList.toggle("hide",!m);window.scrollTo(0,0);if(m)drawMap(mf)}
 let pinD=null;
 function pinName(d){if(d.g!=="쇼핑"&&d.g!=="식당"&&d.st&&d.st.includes(" — ")){const s=d.st.split(" — ")[0].replace(/\([^)]*\)/g,"").trim();if(/[가-힣]/.test(s))return s}return d.ko+(d.no?" "+noLabel(d):"")}
-function placePin(){const p=$("pin"),l=$("pinlab");document.querySelectorAll(".pin.pin2").forEach(e=>e.remove());if(!pinD||pinD.r!==mapR||pinD.lv.charAt(0)!==mf){p.hidden=l.hidden=true;return}
+function placePin(){const p=$("pin"),l=$("pinlab");document.querySelectorAll(".pin.pin2").forEach(e=>e.remove());if(!pinD||pinD.r!==mapR||mfl(pinD)!==mf){p.hidden=l.hidden=true;return}
   const pts=[[pinD.x,pinD.y],...(pinD.pts||[])];
   p.style.left=l.style.left=pinD.x+"%";p.style.top=l.style.top=pinD.y+"%";l.textContent=pinName(pinD)+(pts.length>1?` (${pts.length}곳)`:"");p.hidden=l.hidden=false;
   pts.slice(1).forEach(([x,y])=>{const s=document.createElement("span");s.className="pin pin2";s.style.left=x+"%";s.style.top=y+"%";$("mapin").appendChild(s)});
