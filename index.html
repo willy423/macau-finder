@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <title>마카오 리조트 매장 찾기</title>
+<meta property="og:title" content="마카오 리조트 매장 찾기">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛶</text></svg>">
 <style>
 :root{
@@ -142,13 +143,13 @@ body.mapfull .fullbar{display:flex}
   <div class="fullbar" id="fullbar"><button id="fOut" aria-label="축소">−</button><button id="fIn" aria-label="확대">+</button><button id="fClose" aria-label="크게 보기 닫기">✕</button></div>
 </div>
 <footer>
-  출처: 각 리조트 공식 사이트(매장·식당·부대시설), 공식 홍콩판 사이트(중국어 번체명), 층별 평면도(화장실·ATM 위치, 지도 탭). 한글명은 통용 표기이고 ATM 위치는 평면도 아이콘 기준 추정이에요. 입점·운영시간은 바뀔 수 있으니 중요한 안내 전에는 매장에 확인하세요. <span class="ver">v2026-11-04</span>
+  한글명은 통용 표기이고 ATM 위치는 평면도 아이콘 기준 추정이에요. 입점·운영시간은 바뀔 수 있으니 중요한 안내 전에는 매장에 확인하세요. <span class="ver">v2026-11-04</span>
 </footer>
 </div>
 <button class="totop hide" id="totop" aria-label="맨 위로">↑</button>
 <div class="toast" id="toast" role="status"></div>
 <script>
-const GROUPS=["전체","쇼핑","식당","화장실","은행·ATM","편의시설","호텔","즐길거리","기타"];
+const GROUPS=["전체","쇼핑","식당","은행·ATM","편의시설","호텔","즐길거리","기타"];
 let RES=[],DATA=[],rs="all",g="전체",f="전체",cu="전체",limit=60;
 const CUIS=["중식","차찬텡","일식","한식","양식","아시안","뷔페","패스트푸드","카페·디저트","바·라운지","푸드코트·식당가","기타"];
 const michOf=d=>{const m=(d.up||"").match(/미쉐린 (\d)스타/);return m?+m[1]:0};

@@ -388,7 +388,7 @@
   "c": "중식"
  },
  {
-  "g": "화장실",
+  "g": "편의시설",
   "lv": "G층",
   "no": "",
   "en": "Restroom (Lion Lobby side)",
@@ -402,7 +402,7 @@
   "y": 36.7
  },
  {
-  "g": "화장실",
+  "g": "편의시설",
   "lv": "G층",
   "no": "",
   "en": "Restroom (Chún side)",
@@ -416,7 +416,7 @@
   "y": 30.4
  },
  {
-  "g": "화장실",
+  "g": "편의시설",
   "lv": "G층",
   "no": "",
   "en": "Restroom (Emerald Lobby side)",
@@ -430,7 +430,7 @@
   "y": 36.4
  },
  {
-  "g": "화장실",
+  "g": "편의시설",
   "lv": "G층",
   "no": "",
   "en": "Restrooms (MGM Theater)",
