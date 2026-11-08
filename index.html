@@ -107,6 +107,23 @@ body.mapfull .fullbar{display:flex}
 
 .rs{font-size:12px;color:var(--muted);font-weight:500}
 .status{padding:28px 20px;text-align:center;color:var(--muted)}
+
+.guide{margin:4px 12px 0;background:var(--panel);border:1px solid var(--line);border-radius:12px;font-size:14px;line-height:1.65}
+.guide summary{cursor:pointer;list-style:none;padding:14px 16px;font-weight:700;font-size:15px;display:flex;align-items:center;gap:8px}
+.guide summary::-webkit-details-marker{display:none}
+.guide summary::after{content:"▾";margin-left:auto;color:var(--muted);transition:transform .15s}
+.guide[open] summary::after{transform:rotate(180deg)}
+.guide .gb{padding:0 16px 16px;border-top:1px solid var(--line)}
+.guide h3{font-size:14.5px;margin:16px 0 6px}
+.guide ol{margin:0;padding-left:20px}
+.guide li{margin:3px 0}
+.guide code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;background:var(--bg);border:1px solid var(--line);border-radius:5px;padding:0 5px;overflow-wrap:anywhere}
+.guide table{border-collapse:collapse;width:100%;font-size:13px;margin-top:4px}
+.guide td{border-top:1px solid var(--line);padding:6px;vertical-align:top}
+.guide td:first-child{white-space:nowrap;font-weight:600}
+.guide .tip{background:var(--warnbg);color:var(--warn);border-radius:8px;padding:8px 10px;margin-top:10px;font-size:13px}
+.copyr{margin-top:12px;padding-top:12px;border-top:1px solid var(--line);color:var(--ink);font-size:12.5px;line-height:1.7}
+@media (prefers-reduced-motion:reduce){.guide summary::after{transition:none}}
 </style>
 </head>
 <body>
@@ -142,8 +159,49 @@ body.mapfull .fullbar{display:flex}
   <p class="maphint" id="maphint"></p>
   <div class="fullbar" id="fullbar"><button id="fOut" aria-label="축소">−</button><button id="fIn" aria-label="확대">+</button><button id="fClose" aria-label="크게 보기 닫기">✕</button></div>
 </div>
+<details class="guide">
+  <summary>📘 사용 방법 · 수정할 때 불러오는 법</summary>
+  <div class="gb">
+    <h3>앱 쓰는 법</h3>
+    <ol>
+      <li>위에서 리조트를 고르고 매장명(한글·영문·중국어)이나 매장 번호로 검색해요.</li>
+      <li><b>카톡 답변 복사</b>를 누르면 위치 안내 문장이 복사돼요. 카톡에 붙여 넣으면 돼요.</li>
+      <li><b>📍 지도에서 위치</b>를 누르면 층별 지도에서 그 매장이 빨간 점으로 깜빡여요.</li>
+      <li>위층에 있어 지도에 없는 곳(예: 펄 드래곤, 클럽 MOP)은 1층 연결 엘리베이터에 점이 찍혀요.</li>
+    </ol>
+
+    <h3>수정할 때 Claude에게 불러오는 법</h3>
+    <ol>
+      <li>프로젝트 “마카오 리조트 매장 찾기”에서 새 대화를 열어요.</li>
+      <li>GitHub 저장소 주소를 함께 알려 줘야 해요: <code>https://github.com/willy423/macau-finder</code></li>
+      <li>이렇게 보내요: <code>마카오 리조트 매장 찾기 수정할 거야. GitHub 저장소 https://github.com/willy423/macau-finder 최신 파일 가져와서 ○○ 고쳐줘</code></li>
+      <li>Claude가 저장소에서 최신 파일을 직접 내려받아 작업해요. 파일을 따로 올릴 필요는 없어요.</li>
+      <li>새 평면도·PDF로 바꿀 때는 그 파일만 대화에 올려 주세요.</li>
+    </ol>
+
+    <h3>고친 파일 올리는 법</h3>
+    <ol>
+      <li>Claude가 준 압축 파일을 풀어요. 안에 <code>index.html</code>, <code>data</code>, <code>maps</code>가 들어 있어요.</li>
+      <li>GitHub 저장소 → <b>Add file → Upload files</b> → 풀린 파일·폴더를 통째로 끌어다 놓고 <b>Commit changes</b>.</li>
+      <li>이름이 같은 파일만 새 것으로 바뀌고, 다른 리조트 파일은 지워지지 않아요.</li>
+      <li>1~2분 뒤 사이트에 반영돼요. 예전 화면이 보이면 주소 끝에 <code>?v=2</code>를 붙여 열어 보세요.</li>
+    </ol>
+
+    <h3>저장소 파일 구성</h3>
+    <table>
+      <tr><td>index.html</td><td>앱 화면·기능 전체</td></tr>
+      <tr><td>data/resorts.json</td><td>리조트 목록, 층별 지도 등록, 지도 안내 문구, 방위</td></tr>
+      <tr><td>data/(리조트).json</td><td>리조트별 매장·식당·시설 목록과 지도 점 위치</td></tr>
+      <tr><td>maps/(리조트)-(층)F.jpg</td><td>층별 평면도 이미지 (예: <code>studiocity-1F.jpg</code>)</td></tr>
+    </table>
+    <p style="margin:8px 0 0;font-size:13px;color:var(--muted)">리조트 이름표: <code>venetian</code> 베네시안 · <code>londoner</code> 런더너 · <code>parisian</code> 파리지앵 · <code>galaxy</code> 갤럭시 · <code>mgmcotai</code> MGM 코타이 · <code>cod</code> 시티 오브 드림즈 · <code>studiocity</code> 스튜디오 시티 · <code>wynnpalace</code> 윈 팰리스</p>
+
+    <div class="tip">각 리조트 지도 출처·기준일은 지도 탭 아래 안내 문구에 적혀 있어요. 스튜디오 시티는 2024년 2월 평면도, 시티 오브 드림즈는 2025년 6월 공식 앱 평면도예요.</div>
+  </div>
+</details>
 <footer>
   한글명은 통용 표기이고 ATM 위치는 평면도 아이콘 기준 추정이에요. 입점·운영시간은 바뀔 수 있으니 중요한 안내 전에는 매장에 확인하세요. <span class="ver">v2026-11-04</span>
+  <div class="copyr"><b>Irene의 소중한 자료입니다.</b><br>본 앱의 모든 저작권은 Irene에게 있으며, 무단공유·복제·배포·2차 가공을 금합니다.<br>Copyright © 2026 IRENE. All rights reserved.</div>
 </footer>
 </div>
 <button class="totop hide" id="totop" aria-label="맨 위로">↑</button>
